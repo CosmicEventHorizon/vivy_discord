@@ -66,10 +66,12 @@ async function youtubeSearch(keyword) {
 }
 
 async function playVideo(interaction , url) {
-  const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
-  const ytdl = require('youtube-dl-exec');
+  const { joinVoiceChannel, createAudioPlayer, createAudioResource, StreamType } = require('@discordjs/voice');
+  const ytdl = require('youtube-dl-exec')
   const fixUrl = 'https://www.youtube.com/watch?v=' + url
   const voiceChannel = interaction.member.voice.channel;
+  const { createReadStream } = require('node:fs');
+  const { join } = require('node:path');
   if (!voiceChannel) {
     return interaction.reply('You must be in a voice channel to use this command.');
   }
@@ -80,26 +82,17 @@ async function playVideo(interaction , url) {
       guildId: interaction.message.guild.id,
       adapterCreator: interaction.message.channel.guild.voiceAdapterCreator,
     });
-    const subprocess = ytdl(fixUrl, {
-      dumpSingleJson: true,
-      noWarnings: true,
-      extractAudio: true,
-      audioFormat: 'mp3',
-      //audioQuality: 0,
-      noCheckCertificate: true,
-      preferFreeFormats: true,
-      youtubeSkipDashManifest: true,
-      referer: 'https://google.com'
-    }).then(async output => {
-      let resource = createAudioResource(output.url);
-      console.log(output.url)
-      const player = createAudioPlayer();
-      player.stop()
-      player.play(resource)
-      connection.subscribe(player)
-    }).catch(err => console.error(err));
-
-
+    const subprocess = ytdl.exec(fixUrl, {
+      o: '-',
+      q: '',
+      r: '10M',
+    }, { stdio: ['ignore', 'pipe', 'ignore'] })
+     const player = createAudioPlayer();
+     const resource = createAudioResource(subprocess.stdout);
+    console.log(subprocess)
+    player.stop()
+    player.play(resource)
+    connection.subscribe(player)
     } catch (error) {
     console.log(error);
     interaction.reply('There was an error playing the video.');
