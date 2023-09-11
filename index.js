@@ -1,7 +1,9 @@
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, 
+	GatewayIntentBits, VoiceState, ClientUser } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require("./config.json");
+const searchCommand = require('./search.js');
 
 
 const client = new Client({
@@ -15,43 +17,41 @@ client.once('ready', () => {
     console.log('Ready!');
    });
   
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-   
-for (const file of commandFiles) {
-       const filePath = path.join(commandsPath, file);
-       const command = require(filePath);
-       // Set a new item in the Collection with the key as the command name and the value as the exported module
-       if ('data' in command && 'execute' in command) {
-           client.commands.set(command.data.name, command);
-       } else {
-           console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-       }
-}
-   
 
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
-    const command = interaction.client.commands.get(interaction.commandName);
-
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
+	if (!interaction.isChatInputCommand){return;}
+	const { commandName } = interaction;
+	if (commandName === 'search') {
+	  await searchCommand.execute(interaction);
 	}
 });
+
+
    
 client.on("error", console.error);
 client.on("warn", console.warn);
 
 client.login(config.token);
+
+
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isStringSelectMenu){return;}
+	const customId = interaction.customId;
+	const selectedOption = interaction.values[0]; // Assuming you only allow one option to be selected
+  
+	if (customId === 'searchResults') {
+	  // Handle the selected option here
+	  const replyContent = `You selected option: ${selectedOption}`;
+	  await searchCommand.playVideo(interaction, selectedOption)
+	  await interaction.reply(replyContent);
+	}
+
+});
+
+//const collectorFilter = (interaction) => interaction.user.id === interaction.user.id;
+//const collector = interaction.channel.createMessageComponentCollector({ collectorFilter, time: 60000 });
+//collector.on('collect', async (selectInteraction) => {
+//  const selectedValue = selectInteraction.values[0];
+//  await playVideo(selectInteraction, selectedValue);
+//  await selectInteraction.reply("Playing")
+//});
