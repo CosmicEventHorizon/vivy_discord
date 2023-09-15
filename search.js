@@ -8,6 +8,7 @@ const optionsArray = [];
 
 
 
+
 module.exports = {
   playVideo,
 	data: new SlashCommandBuilder()
@@ -50,7 +51,7 @@ module.exports = {
     
 async function youtubeSearch(keyword) {
         try {
-          const results = await youtubesearchapi.GetListByKeyword(keyword, true, 5, { /* additional options */ });
+          const results = await youtubesearchapi.GetListByKeyword(keyword, true, 5, { });
           const jsonItems = results.items;
           console.log(jsonItems)
           for (const item of jsonItems) {
@@ -72,35 +73,35 @@ async function playVideo(interaction , url) {
   const voiceChannel = interaction.member.voice.channel;
   const { createReadStream } = require('node:fs');
   const { join } = require('node:path');
+  let subprocess = null;
+
   if (!voiceChannel) {
-    return interaction.reply('You must be in a voice channel to use this command.');
-  }
-  try {
-    // Join the user's voice channel
-    const connection = joinVoiceChannel({
-      channelId: interaction.member.voice.channel.id,
-      guildId: interaction.message.guild.id,
-      adapterCreator: interaction.message.channel.guild.voiceAdapterCreator,
-    });
-    const subprocess = ytdl.exec(fixUrl, {
-      o: '-',
-      q: '',
-      r: '10M',
-    }, { stdio: ['ignore', 'pipe', 'ignore'] })
-     const player = createAudioPlayer();
-     const resource = createAudioResource(subprocess.stdout);
-    console.log(subprocess)
-    player.stop()
-    player.play(resource)
-    connection.subscribe(player)
-    } catch (error) {
-    console.log(error);
-    interaction.reply('There was an error playing the video.');
+    const voiceError = "error"
+    return voiceError
+  } else {
+    try {
+      const connection = joinVoiceChannel({
+        channelId: interaction.member.voice.channel.id,
+        guildId: interaction.message.guild.id,
+        adapterCreator: interaction.message.channel.guild.voiceAdapterCreator,
+      });
+      subprocess = ytdl.exec(fixUrl, {
+        o: '-',
+        q: '',
+        r: '10M',
+      }, { stdio: ['ignore', 'pipe', 'ignore'] })
+      const player = createAudioPlayer();
+      const resource = createAudioResource(subprocess.stdout);
+      //console.log(subprocess)
+      player.stop()
+      player.play(resource)
+      connection.subscribe(player)
+      return subprocess.pid;
+      } catch (error) {
+      console.log(error);
+      interaction.reply('There was an error playing the video.');
+    }
   }
 }
 
 
-
-//await youtubeSearch();
-//await interaction.reply(jsonResult);
-  
