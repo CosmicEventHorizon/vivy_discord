@@ -5,6 +5,7 @@ let jsonResult = '';
 const titleArray = [];
 const idArray = [];
 const optionsArray = [];
+let player = null;
 
 
 
@@ -90,13 +91,13 @@ async function playVideo(interaction , url) {
         q: '',
         r: '10M',
       }, { stdio: ['ignore', 'pipe', 'ignore'] })
-      const player = createAudioPlayer();
+      player = createAudioPlayer();
       const resource = createAudioResource(subprocess.stdout);
       //console.log(subprocess)
       player.stop()
       player.play(resource)
       connection.subscribe(player)
-      return subprocess.pid;
+      return [subprocess.pid, player];
       } catch (error) {
       console.log(error);
       interaction.reply('There was an error playing the video.');
