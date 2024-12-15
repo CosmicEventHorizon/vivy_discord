@@ -9,14 +9,10 @@ option.setName('keyword')
 .setDescription('The keyword to search')
 .setRequired(true));
 
-
 const commands = [
     searchCommand, {
         name: 'stop',
         description: 'Stop current track'
-    }, {
-    	name: 'suno',
-        description: 'play AI music'
     },
 ];
 

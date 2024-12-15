@@ -1,0 +1,5 @@
+discord.js
+fs
+path
+youtube-search-api
+youtube-dl-exec

@@ -1,10 +1,21 @@
+/** Imports **/
+
+//import classes from discord.js
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, 
   ActionRowBuilder, SlashCommandBuilder } = require('discord.js');
+//import youtube-search-api module for searching youtube
 const youtubesearchapi = require("youtube-search-api");
-let jsonResult = '';
+
+/** Variables and Constants**/
+
+//string array containing the youtube titles
 const titleArray = [];
+//array containing the id of each youtube titles 
 const idArray = [];
+//holds the StringSelectMenuOption objects with the id and title
 const optionsArray = [];
+//holds the relevant parts of the json response from youtube-search-api
+let jsonResult = '';
 
 
 
@@ -25,12 +36,9 @@ module.exports = {
     const keyword = interaction.options.getString('keyword')
     await youtubeSearch(keyword);
     for (let i = 0; i< titleArray.length; i++){
-      const title = titleArray[i]
-      const id = idArray[i]
-
       const options = new StringSelectMenuOptionBuilder()
-      .setLabel(title)
-      .setValue(id)
+      .setLabel(titleArray[i])
+      .setValue(idArray[i])
 
       optionsArray.push(options)
     }
@@ -88,15 +96,15 @@ async function playVideo(interaction , url) {
       subprocess = ytdl.exec(fixUrl, {
         o: '-',
         q: '',
-        r: '10M',
+        f: 'bestaudio',
       }, { stdio: ['ignore', 'pipe', 'ignore'] })
-      const player = createAudioPlayer();
-      const resource = createAudioResource(subprocess.stdout);
+      player = createAudioPlayer();
+      const resource = createAudioResource(subprocess.stdout, {inputType: StreamType.Arbitrary,});
       //console.log(subprocess)
       player.stop()
       player.play(resource)
       connection.subscribe(player)
-      return subprocess.pid;
+      return [subprocess.pid, player];
       } catch (error) {
       console.log(error);
       interaction.reply('There was an error playing the video.');
