@@ -17,9 +17,11 @@ const searchCommand = require('./search.js');
 
 //initialize subprocessManager to track subprocess
 let subprocessManager = null;
-//initalize subproceessPromise that will store the subprocess
-let subprocessPromise = null;
+//initialize subprocessManagerArray which will contain the subprocessManager Promise results with the subprocess PID and player
 let subprocessManagerArray = null;
+//initalize subproceessPID that will store the subprocess PID
+let subprocessPID = null;
+//initialize the player which will contain the AudioPlayer object
 let player = null;
 //initialize a Client objects with the following options:
 //GuildVoiceStates: allow the bot to track user's voice status in the voice channel
@@ -60,7 +62,8 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (commandName === 'search') {
 	  await searchCommand.execute(interaction);
 	}
-
+	
+	//if the commandName is stop then call the stop() method of the player
 	if (commandName === 'stop') {
 		try {
 			//console.log(subprocessManagerArray)
@@ -82,7 +85,7 @@ client.on(Events.InteractionCreate, async interaction => {
 	//get the customId property from the interaction object and store it under "customId"
 	const {customId} = interaction;
 
-
+	//check that the user chooses an option
 	if (interaction.values && interaction.values.length > 0) {
 		selectedOption = interaction.values[0];
 	  } else {
@@ -91,10 +94,10 @@ client.on(Events.InteractionCreate, async interaction => {
   
 	if (customId === 'searchResults') {
 	  	const replyContent = `You selected option: ${selectedOption}`;
- 		if (typeof subprocessPromise === 'number'){
+ 		if (typeof subprocessPID === 'number'){
 				try{
 				console.log (typeof(subprocessManager))
-				process.kill(subprocessPromise)
+				process.kill(subprocessPID)
 				} catch (error){
 					console.log ("pid doesnt exist")
 				}
@@ -102,9 +105,9 @@ client.on(Events.InteractionCreate, async interaction => {
 		subprocessManager = searchCommand.playVideo(interaction, selectedOption)
 		console.log(subprocessManager)
 		subprocessManagerArray = await subprocessManager
-		subprocessPromise = await subprocessManagerArray[0]
+		subprocessPID = await subprocessManagerArray[0]
 		player = await subprocessManagerArray[1]
-		if (typeof subprocessPromise === 'number'){
+		if (typeof subprocessPID === 'number'){
 			try {
 				await interaction.reply(replyContent);
 				console.log("Replied successfully!");
@@ -112,7 +115,7 @@ client.on(Events.InteractionCreate, async interaction => {
 				console.error("Error replying to interaction:", error);
 			  }
 		}
-		if (typeof subprocessPromise === 'string' || subprocessPromise instanceof String){
+		if (typeof subprocessPID === 'string' || subprocessPID instanceof String){
 			await interaction.reply("Please enter voice chat");
 		}
 	}
