@@ -1,3 +1,5 @@
+<img align="right" src="https://i.imgur.com/IlgJNak.png" height="200" width="200">
+
 # 📺 Vivy: Your Charming YouTube Discord Bot
 
 Vivy is a lightweight, yet powerful YouTube Discord bot designed to enhance your music listening experience while keeping things simple and easy to use. It's perfect for small to medium-sized servers that want a basic yet reliable YouTube music bot.
