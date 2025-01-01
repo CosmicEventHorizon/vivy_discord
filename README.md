@@ -14,19 +14,23 @@ Vivy is a lightweight, yet powerful YouTube Discord bot designed to enhance your
 
 ## 🛠️ Getting Started:
 
-1. **Rename** the `config.json.remove` file to `config.json`.
-2. **Fill in** your bot's **token**, **clientID**, and **guildID** in their respective fields within the `config.json` file.
-3. **Install** the required dependencies listed in the `requirements` file using npm (`npm install requirements`).
-4. **Run** the bot with `node index.js`.
+1. **Install** the required dependencies listed in the `requirements` file using npm (`npm install requirements`).
+2. **Rename** the `config.json.remove` file to `config.json`.
+3. **Fill in** your bot's **token**, **clientID**, and **guildID** in their respective fields within the `config.json` file. You can get these keys from your Discord's developer portal.
+4. **Register** your bot's slash commands with `node register_commands.js`.
+5. **Run** the bot with `node index.js`.
 
 ## 🎧 How to Use Vivy:
 
 Vivy currently supports the following commands to control your music playback:
 
-- `/search [keyword]`: Search for YouTube videos using the provided keyword and play the first result automatically. Once you've made a selection, use the reaction menu to start playing.
+- `/search [keyword]`: Search for YouTube videos using the provided keyword. You can make a selection from the drop-down menu. Once you've made a selection, the track will start playing.
 - `/stop`: Stop the current music playback immediately.
+- `/pause`: Pause the current music playback immediately.
+- `/resume`: Resume the current music playback immediately.
 
-**Note:** Vivy does not currently support queueing or pausing/resuming tracks. These features might be added in future updates based on user feedback and demand.
+
+**Note:** Vivy does not currently support queueing. This feature might be added in future updates based on user feedback and demand.
 
 ## 🌟 Support Vivy:
 
