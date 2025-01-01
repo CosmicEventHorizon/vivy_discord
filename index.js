@@ -68,13 +68,39 @@ client.on(Events.InteractionCreate, async interaction => {
 		try {
 			//console.log(subprocessManagerArray)
 			player.stop();
-			await interaction.reply("Garbage music stopped :)")
+			await interaction.reply("Music stopped :)")
 		} catch (error) {
 			console.log("Player doesn't exist")
 			await interaction.reply("Start a music :?")
 
 		}
 	}
+
+	//if the commandName is pause then call the pause() method of the player
+	if (commandName === 'pause') {
+		try {
+			//console.log(subprocessManagerArray)
+			player.pause();
+			await interaction.reply("Music paused :(")
+		} catch (error) {
+			console.log("Player doesn't exist")
+			await interaction.reply("Start a music :?")
+		}
+	}
+
+	//if the commandName is resume then call the unpause() method of the player
+	if (commandName === 'resume') {
+		try {
+			//console.log(subprocessManagerArray)
+			player.unpause();
+			await interaction.reply("Music resumed :D")
+		} catch (error) {
+			console.log("Player doesn't exist")
+			await interaction.reply("Start a music :?")
+		}
+	}
+	
+
 });
 
 //call on() with the InteractionCreate event listener, triggers when the user interacts with the bot
