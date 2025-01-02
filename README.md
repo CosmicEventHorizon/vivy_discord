@@ -14,7 +14,7 @@ Vivy is a lightweight, yet powerful YouTube Discord bot designed to enhance your
 
 ## 🛠️ Getting Started:
 
-1. **Install** the required dependencies listed in the `requirements` file using npm (`npm install requirements`).
+1. **Install** the required dependencies listed in the `package.json` file using npm (`npm install`).
 2. **Rename** the `config.json.remove` file to `config.json`.
 3. **Fill in** your bot's **token**, **clientID**, and **guildID** in their respective fields within the `config.json` file. You can get these keys from your Discord's developer portal.
 4. **Register** your bot's slash commands with `node register_commands.js`.

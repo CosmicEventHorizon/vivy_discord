@@ -106,8 +106,10 @@ client.on(Events.InteractionCreate, async interaction => {
 //call on() with the InteractionCreate event listener, triggers when the user interacts with the bot
 client.on(Events.InteractionCreate, async interaction => {
 	//if the interaction is not a stringSelectMenu, do nothing
-	if (!interaction.isStringSelectMenu){return;}
-
+	if (!interaction.isStringSelectMenu){
+		console.log("not a string select");
+	}
+	console.log(interaction)
 	//get the customId property from the interaction object and store it under "customId"
 	const {customId} = interaction;
 
