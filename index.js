@@ -68,7 +68,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		try {
 			//console.log(subprocessManagerArray)
 			player.stop();
-			await interaction.reply("Music stopped :)")
+			await interaction.reply("Music stopped!")
 		} catch (error) {
 			console.log("Player doesn't exist")
 			await interaction.reply("Start a music :?")
@@ -81,7 +81,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		try {
 			//console.log(subprocessManagerArray)
 			player.pause();
-			await interaction.reply("Music paused :(")
+			await interaction.reply("Music paused!")
 		} catch (error) {
 			console.log("Player doesn't exist")
 			await interaction.reply("Start a music :?")
@@ -93,7 +93,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		try {
 			//console.log(subprocessManagerArray)
 			player.unpause();
-			await interaction.reply("Music resumed :D")
+			await interaction.reply("Music resumed!")
 		} catch (error) {
 			console.log("Player doesn't exist")
 			await interaction.reply("Start a music :?")
