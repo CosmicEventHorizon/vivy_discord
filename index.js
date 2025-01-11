@@ -122,7 +122,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		console.log(error);
 	}
 	if (player != null) {
-		console.log("Stopped current music")
+		//console.log("Stopped current music")
 		player.stop();
 	}
 
