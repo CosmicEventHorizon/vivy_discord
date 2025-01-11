@@ -121,13 +121,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	} catch (error) {
 		console.log(error);
 	}
+	if (player != null) {
+		console.log("Stopped current music")
+		player.stop();
+	}
 
 	if (customId === "searchResults") {
-		//stop music if its playing
-		if (player != null) {
-			player.stop();
-		}
-
 		//play the chosen music
 		replyContent = `Now playing 🎵 ${title} 🎵`;
 		playerPromise = searchCommand.playVideo(interaction, selectedOption);

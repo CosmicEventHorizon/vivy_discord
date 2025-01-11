@@ -125,7 +125,6 @@ async function playVideo(interaction, url) {
 			});
 			player.play(resource);
 			connection.subscribe(player);
-
 			//return the player object to control its status from index
 			return player;
 
