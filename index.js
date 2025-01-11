@@ -20,14 +20,11 @@ const searchCommand = require("./search.js");
 
 /** Variables  and Constants**/
 
-//initialize subprocessManager to track subprocess
-let subprocessManager = null;
-//initialize subprocessManagerArray which will contain the subprocessManager Promise results with the subprocess PID and player
-let subprocessManagerArray = null;
-//initalize subproceessPID that will store the subprocess PID
-let subprocessPID = null;
+//initialize the playerPromise which will contain the AudioPlayer promise
+let playerPromise = null;
 //initialize the player which will contain the AudioPlayer object
 let player = null;
+
 //initialize a Client objects with the following options:
 //GuildVoiceStates: allow the bot to track user's voice status in the voice channel
 //GuildMessages: allow the bot to read server chat messages
@@ -74,36 +71,33 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	//if the commandName is stop then call the stop() method of the player
 	if (commandName === "stop") {
 		try {
-			//console.log(subprocessManagerArray)
 			player.stop();
 			await interaction.reply("Music stopped!");
 		} catch (error) {
-			console.log("Player doesn't exist");
-			await interaction.reply("Start a music :?");
+			console.log(error);
+			await interaction.reply("There was an error stopping the music");
 		}
 	}
 
 	//if the commandName is pause then call the pause() method of the player
 	if (commandName === "pause") {
 		try {
-			//console.log(subprocessManagerArray)
 			player.pause();
 			await interaction.reply("Music paused!");
 		} catch (error) {
 			console.log("Player doesn't exist");
-			await interaction.reply("Start a music :?");
+			await interaction.reply("Error pausing player");
 		}
 	}
 
 	//if the commandName is resume then call the unpause() method of the player
 	if (commandName === "resume") {
 		try {
-			//console.log(subprocessManagerArray)
 			player.unpause();
 			await interaction.reply("Music resumed!");
 		} catch (error) {
 			console.log("Player doesn't exist");
-			await interaction.reply("Start a music :?");
+			await interaction.reply("Error resuming player");
 		}
 	}
 });
@@ -117,42 +111,28 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	//get the customId property from the interaction object and store it under "customId"
 	const { customId } = interaction;
 
-	//check that the user chooses an option
+	//obtain the user's chosen option
 	try {
 		if (interaction.values && interaction.values.length > 0) {
-			selectedOption = interaction.values[0];
-		} else {
-			console.log("No values selected.");
+			selectedOptionArray = interaction.values[0].split(',');
+			title = selectedOptionArray[0];
+			selectedOption = selectedOptionArray[1];
 		}
 	} catch (error) {
 		console.log(error);
 	}
 
 	if (customId === "searchResults") {
-		const replyContent = `You selected option: ${selectedOption}`;
-		if (typeof subprocessPID === "number") {
-			try {
-				//console.log (typeof(subprocessManager))
-				process.kill(subprocessPID);
-			} catch (error) {
-				console.log("pid doesnt exist");
-			}
+		//stop music if its playing
+		if (player != null) {
+			player.stop();
 		}
-		subprocessManager = searchCommand.playVideo(interaction, selectedOption);
-		//console.log(subprocessManager)
-		subprocessManagerArray = await subprocessManager;
-		subprocessPID = await subprocessManagerArray[0];
-		player = await subprocessManagerArray[1];
-		if (typeof subprocessPID === "number") {
-			try {
-				await interaction.reply(replyContent);
-				console.log("Replied successfully!");
-			} catch (error) {
-				console.error("Error replying to interaction:", error);
-			}
-		}
-		if (typeof subprocessPID === "string" || subprocessPID instanceof String) {
-			await interaction.reply("Please enter voice chat");
-		}
+
+		//play the chosen music
+		replyContent = `Now playing 🎵 ${title} 🎵`;
+		playerPromise = searchCommand.playVideo(interaction, selectedOption);
+		//console.log(player)
+		player = await playerPromise;
+		await interaction.reply(replyContent);
 	}
 });

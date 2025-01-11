@@ -1,12 +1,10 @@
 {
   "dependencies": {
-    "@discordjs/opus": "^0.9.0",
-    "@discordjs/voice": "^0.16.0",
-    "discord-player": "^6.6.3",
-    "discord.js": "^14.13.0",
-    "ffmpeg": "^0.0.4",
-    "fluent-ffmpeg": "^2.1.2",
-    "youtube-dl-exec": "^2.4.8",
-    "youtube-search-api": "^1.2.1"
+    "discord.js": "",
+    "@discordjs/voice": "",
+    "opusscript": "",
+    "ffmpeg-static": "",
+    "youtube-dl-exec": "",
+    "youtube-search-api": ""
   }
 }

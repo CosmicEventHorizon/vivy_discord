@@ -41,7 +41,7 @@ module.exports = {
 		for (let i = 0; i < titleArray.length; i++) {
 			const options = new StringSelectMenuOptionBuilder()
 				.setLabel(titleArray[i])
-				.setValue(idArray[i]);
+				.setValue([titleArray[i],idArray[i]].join(','));
 
 			optionsArray.push(options);
 		}
@@ -81,6 +81,8 @@ async function youtubeSearch(keyword) {
 }
 
 async function playVideo(interaction, url) {
+
+	/**  Dependencies **/
 	const {
 		joinVoiceChannel,
 		createAudioPlayer,
@@ -88,43 +90,49 @@ async function playVideo(interaction, url) {
 		StreamType,
 	} = require("@discordjs/voice");
 	const ytdl = require("youtube-dl-exec");
-	const fixUrl = "https://www.youtube.com/watch?v=" + url;
-	const voiceChannel = interaction.member.voice.channel;
-	const { createReadStream } = require("node:fs");
-	const { join } = require("node:path");
-	let subprocess = null;
+	const { spawn } = require("child_process");
 
+
+	//create the url link
+	const fixUrl = "https://www.youtube.com/watch?v=" + url;
+	//get the user's voice channel
+	const voiceChannel = interaction.member.voice.channel;
+	
+	//enter the user's voice channel and play the youtube music video;
 	if (!voiceChannel) {
-		const voiceError = "error";
+		const voiceError = "Error joining the voice channel";
 		return voiceError;
 	} else {
 		try {
+			//join the user's voice channel
 			const connection = joinVoiceChannel({
 				channelId: interaction.member.voice.channel.id,
 				guildId: interaction.message.guild.id,
 				adapterCreator: interaction.message.channel.guild.voiceAdapterCreator,
 			});
-			subprocess = ytdl.exec(
-				fixUrl,
-				{
-					o: "-",
-					q: "",
-					f: "bestaudio",
-				},
+
+			//create yt-dlp subprocess
+			const subprocess = spawn(
+				"./node_modules/youtube-dl-exec/bin/yt-dlp",
+				[fixUrl, "-o", "-", "-q", "", "-f", "bestaudio"],
 				{ stdio: ["ignore", "pipe", "ignore"] }
 			);
+
+			// create the audioplayer and play the audio resources from stdout of the subprocess
 			player = createAudioPlayer();
 			const resource = createAudioResource(subprocess.stdout, {
 				inputType: StreamType.Arbitrary,
 			});
-			//console.log(subprocess)
-			player.stop();
 			player.play(resource);
 			connection.subscribe(player);
-			return [subprocess.pid, player];
+
+			//return the player object to control its status from index
+			return player;
+
+
 		} catch (error) {
 			console.log(error);
-			interaction.reply("There was an error playing the video.");
+			interaction.reply("There was an error playing the audio");
 		}
 	}
 }
