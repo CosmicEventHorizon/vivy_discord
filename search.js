@@ -73,7 +73,7 @@ async function youtubeSearch(keyword) {
 			const shortTitleString = shortTitle.substring(0, 80);
 			titleArray.push(shortTitleString);
 			idArray.push(item.id);
-			jsonResult += item.title + item.id + ", ";
+			jsonResult += item.title + item.id + " , ";
 		}
 	} catch (error) {
 		console.error(error);
