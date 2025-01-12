@@ -41,7 +41,7 @@ module.exports = {
 		for (let i = 0; i < titleArray.length; i++) {
 			const options = new StringSelectMenuOptionBuilder()
 				.setLabel(titleArray[i])
-				.setValue([titleArray[i],idArray[i]].join(','));
+				.setValue(JSON.stringify([titleArray[i],idArray[i]]));
 
 			optionsArray.push(options);
 		}
@@ -73,7 +73,7 @@ async function youtubeSearch(keyword) {
 			const shortTitleString = shortTitle.substring(0, 80);
 			titleArray.push(shortTitleString);
 			idArray.push(item.id);
-			jsonResult += item.title + item.id + " , ";
+			jsonResult += item.title + item.id + ", ";
 		}
 	} catch (error) {
 		console.error(error);

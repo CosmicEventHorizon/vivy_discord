@@ -114,7 +114,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	//obtain the user's chosen option
 	try {
 		if (interaction.values && interaction.values.length > 0) {
-			selectedOptionArray = interaction.values[0].split(' , ');
+			selectedOptionArray = JSON.parse(interaction.values[0]);
 			title = selectedOptionArray[0];
 			selectedOption = selectedOptionArray[1];
 		}
