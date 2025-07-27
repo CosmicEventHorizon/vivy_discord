@@ -19,7 +19,8 @@ const idArray = [];
 //holds the StringSelectMenuOption objects with the id and title
 const optionsArray = [];
 //holds the relevant parts of the json response from youtube-search-api
-let jsonResult = "";
+const jsonResultArray = [];
+
 
 module.exports = {
 	playVideo,
@@ -69,11 +70,15 @@ async function youtubeSearch(keyword) {
 		const jsonItems = results.items;
 		//console.log(jsonItems)
 		for (const item of jsonItems) {
-			const shortTitle = item.title;
-			const shortTitleString = shortTitle.substring(0, 80);
-			titleArray.push(shortTitleString);
-			idArray.push(item.id);
-			jsonResult += item.title + item.id + ", ";
+			const shortTitle = item.title.substring(0, 80);
+			const videoId = typeof item.id === 'object' ? item.id.videoId : item.id;
+
+			titleArray.push(shortTitle);
+			idArray.push(item.id.videoId || item.id);
+
+
+			jsonResultArray.push([shortTitle, videoId]);
+
 		}
 	} catch (error) {
 		console.error(error);
