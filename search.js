@@ -41,7 +41,7 @@ module.exports = {
 		await youtubeSearch(keyword);
 		for (let i = 0; i < titleArray.length; i++) {
 			const options = new StringSelectMenuOptionBuilder()
-				.setLabel(titleArray[i])
+				.setLabel(titleArray[i].substring(0, 50))
 				.setValue(JSON.stringify([titleArray[i],idArray[i]]));
 
 			optionsArray.push(options);
@@ -94,20 +94,24 @@ async function playVideo(interaction, url) {
 		createAudioResource,
 		StreamType,
 	} = require("@discordjs/voice");
-	const ytdl = require("youtube-dl-exec");
+	const ytdl_wrap = require("yt-dlp-wrap").default;
 	const { spawn } = require("child_process");
+	const path = require("path");
+	const os = require("os");
 
 
 	//create the url link
-	const fixUrl = "https://www.youtube.com/watch?v=" + url;
+	const fix_url = "https://www.youtube.com/watch?v=" + url;
 	//get the user's voice channel
 	const voiceChannel = interaction.member.voice.channel;
 	
 	//enter the user's voice channel and play the youtube music video;
 	if (!voiceChannel) {
-		const voiceError = "Error joining the voice channel";
-		return voiceError;
-	} else {
+		await interaction.reply({
+			content: "Join a voice channel pwease uwu!"
+		});
+		return;
+	}
 		try {
 			//join the user's voice channel
 			const connection = joinVoiceChannel({
@@ -116,17 +120,37 @@ async function playVideo(interaction, url) {
 				adapterCreator: interaction.message.channel.guild.voiceAdapterCreator,
 			});
 
+			const ytdlp_binary = os.platform() === "win32" ? "yt-dlp.exe" : "yt-dlp";
+			const ytdlp_path = path.resolve(__dirname, ytdlp_binary);
+
 			//create yt-dlp subprocess
-			const subprocess = spawn(
-				"./node_modules/youtube-dl-exec/bin/yt-dlp",
-				[fixUrl, "-o", "-", "-q", "", "-f", "bestaudio"],
-				{ stdio: ["ignore", "pipe", "ignore"] }
-			);
+			const ytdlp_process = spawn(ytdlp_path, [
+				fix_url,
+				"-f", "bestaudio",
+				"-o", "-", 
+				"--no-playlist",
+				"--quiet",
+				"--force-ipv4"
+			]);
+	
+			const ffmpeg = spawn("ffmpeg", [
+				"-i", "pipe:0",
+				"-analyzeduration", "0",
+				"-loglevel", "0",
+				"-f", "s16le",
+				"-ar", "48000",
+				"-ac", "2",
+				"pipe:1"
+			], {
+				stdio: ["pipe", "pipe", "ignore"]
+			});
+	
+			ytdlp_process.stdout.pipe(ffmpeg.stdin);
 
 			// create the audioplayer and play the audio resources from stdout of the subprocess
 			player = createAudioPlayer();
-			const resource = createAudioResource(subprocess.stdout, {
-				inputType: StreamType.Arbitrary,
+			const resource = createAudioResource(ffmpeg.stdout, {
+				inputType: StreamType.Raw,
 			});
 			player.play(resource);
 			connection.subscribe(player);
@@ -135,8 +159,9 @@ async function playVideo(interaction, url) {
 
 
 		} catch (error) {
-			console.log(error);
-			interaction.reply("There was an error playing the audio");
+			console.error("Error in playVideo:", error);
+			await interaction.reply("There was an error playing the audio");
+			return null;
 		}
 	}
-}
+

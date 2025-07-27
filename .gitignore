@@ -3,3 +3,4 @@ run.sh
 output.log
 node_modules
 package-lock.json
+yt-dlp

@@ -14,11 +14,12 @@ Vivy is a lightweight, yet powerful YouTube Discord bot designed to enhance your
 
 ## 🛠️ Getting Started:
 
-1. **Install** the required dependencies listed in the `package.json` file using npm (`npm install`).
+1. **Install** ffmpeg and the required dependencies listed in the `package.json` file using npm (`npm install`).
 2. **Rename** the `config.json.remove` file to `config.json`.
 3. **Fill in** your bot's **token**, **clientID**, and **guildID** in their respective fields within the `config.json` file. You can get these keys from your Discord's developer portal.
 4. **Register** your bot's slash commands with `node register_commands.js`.
-5. **Run** the bot with `node index.js`.
+5. **Download** the yt-dlp binary corresponding to your system from [the official repository](https://github.com/yt-dlp/yt-dlp) and place it in the root of the project directory.
+6. **Run** the bot with `node index.js`.
 
 ## 🎧 How to Use Vivy:
 
