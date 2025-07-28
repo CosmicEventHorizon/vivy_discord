@@ -41,8 +41,8 @@ module.exports = {
 		await youtubeSearch(keyword);
 		for (let i = 0; i < titleArray.length; i++) {
 			const options = new StringSelectMenuOptionBuilder()
-				.setLabel(titleArray[i].substring(0, 50))
-				.setValue(JSON.stringify([titleArray[i],idArray[i]]));
+				.setLabel(titleArray[i].substring(0, 40))
+				.setValue(JSON.stringify([titleArray[i].substring(0, 40),idArray[i]]));
 
 			optionsArray.push(options);
 		}
@@ -70,7 +70,7 @@ async function youtubeSearch(keyword) {
 		const jsonItems = results.items;
 		//console.log(jsonItems)
 		for (const item of jsonItems) {
-			const shortTitle = item.title.substring(0, 80);
+			const shortTitle = item.title.substring(0, 40);
 			const videoId = typeof item.id === 'object' ? item.id.videoId : item.id;
 
 			titleArray.push(shortTitle);
@@ -93,6 +93,9 @@ async function playVideo(interaction, url) {
 		createAudioPlayer,
 		createAudioResource,
 		StreamType,
+		AudioPlayerStatus,
+		VoiceConnectionStatus,
+		entersState
 	} = require("@discordjs/voice");
 	const ytdl_wrap = require("yt-dlp-wrap").default;
 	const { spawn } = require("child_process");
@@ -144,11 +147,13 @@ async function playVideo(interaction, url) {
 			], {
 				stdio: ["pipe", "pipe", "ignore"]
 			});
+			
+
 	
 			ytdlp_process.stdout.pipe(ffmpeg.stdin);
 
 			// create the audioplayer and play the audio resources from stdout of the subprocess
-			player = createAudioPlayer();
+			const player = createAudioPlayer();
 			const resource = createAudioResource(ffmpeg.stdout, {
 				inputType: StreamType.Raw,
 			});

@@ -82,22 +82,32 @@ client.on(Events.InteractionCreate, async (interaction) => {
 	//if the commandName is pause then call the pause() method of the player
 	if (commandName === "pause") {
 		try {
-			player.pause();
-			await interaction.reply("Music paused!");
+			if (!player) throw new Error("No player exists");
+			const paused = player.pause();
+			if (paused) {
+				await interaction.reply("Music paused!");
+			} else {
+				await interaction.reply("Not playing music");
+			}
 		} catch (error) {
-			console.log("Player doesn't exist");
-			await interaction.reply("Error pausing player");
+			console.error(error);
+			await interaction.reply("Error pausing the player.");
 		}
 	}
 
 	//if the commandName is resume then call the unpause() method of the player
 	if (commandName === "resume") {
 		try {
-			player.unpause();
-			await interaction.reply("Music resumed!");
+			if (!player) throw new Error("No player exists");
+			const resumed = player.unpause();
+			if (resumed) {
+				await interaction.reply("Music resumed!");
+			} else {
+				await interaction.reply("Music not paused");
+			}
 		} catch (error) {
-			console.log("Player doesn't exist");
-			await interaction.reply("Error resuming player");
+			console.error(error);
+			await interaction.reply("Error resuming the player.");
 		}
 	}
 });
